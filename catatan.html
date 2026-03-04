@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Catatan dengan Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Styling untuk halaman login */
+        .login-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .login-section h2 {
+            color: #2d3748;
+            margin-bottom: 25px;
+        }
+
+        #username-input {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        #login-btn {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        #login-btn:hover {
+            background-color: #2b6cb0;
+        }
+
+        /* Styling untuk area catatan */
+        .notes-section {
+            display: none;
+        }
+
+        .user-info {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info span {
+            color: #2d3748;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        #logout-btn {
+            background-color: #718096;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #logout-btn:hover {
+            background-color: #4a5568;
+        }
+
+        .note-input {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        #note-title, #note-content {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        #note-content {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        #add-note-btn {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #add-note-btn:hover {
+            background-color: #2b6cb0;
+        }
+
+        .notes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .note-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .note-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 18px;
+            word-wrap: break-word;
+        }
+
+        .note-card p {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            margin-bottom: 25px;
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .delete-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c53030;
+        }
+
+        @media (max-width: 600px) {
+            .notes-list {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bagian Login -->
+        <div class="login-section" id="login-section">
+            <h2>Masuk ke Aplikasi Catatan</h2>
+            <input type="text" id="username-input" placeholder="Masukkan nama Anda...">
+            <button id="login-btn">Masuk</button>
+        </div>
+
+        <!-- Bagian Catatan (sembunyi saat belum login) -->
+        <div class="notes-section" id="notes-section">
+            <div class="user-info">
+                <span>Halo, <span id="display-username"></span>!</span>
+                <button id="logout-btn">Keluar</button>
+            </div>
+
+            <h1>Aplikasi Catatan</h1>
+
+            <div class="note-input">
+                <input type="text" id="note-title" placeholder="Judul catatan...">
+                <textarea id="note-content" placeholder="Isi catatan..."></textarea>
+                <button id="add-note-btn">Tambah Catatan</button>
+            </div>
+
+            <div class="notes-list" id="notes-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Elemen DOM untuk login
+        const loginSection = document.getElementById('login-section');
+        const notesSection = document.getElementById('notes-section');
+        const usernameInput = document.getElementById('username-input');
+        const loginBtn = document.getElementById('login-btn');
+        const displayUsername = document.getElementById('display-username');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Elemen DOM untuk catatan
+        const noteTitle = document.getElementById('note-title');
+        const noteContent = document.getElementById('note-content');
+        const addNoteBtn = document.getElementById('add-note-btn');
+        const notesList = document.getElementById('notes-list');
+
+        // Cek apakah pengguna sudah login sebelumnya
+        checkLoginStatus();
+
+        // Event listener untuk tombol login
+        loginBtn.addEventListener('click', function() {
+            const username = usernameInput.value.trim();
+            
+            if (username === '') {
+                alert('Nama pengguna tidak boleh kosong!');
+                return;
+            }
+
+            // Simpan nama pengguna dan status login ke localStorage
+            localStorage.setItem('currentUser', username);
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // Tampilkan area catatan dan sembunyikan login
+            showNotesSection();
+        });
+
+        // Event listener untuk tombol logout
+        logoutBtn.addEventListener('click', function() {
+            // Hapus data login dari localStorage
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+
+            // Sembunyikan area catatan dan tampilkan login
+            loginSection.style.display = 'block';
+            notesSection.style.display = 'none';
+            usernameInput.value = '';
+        });
+
+        // Event listener untuk tombol tambah catatan
+        addNoteBtn.addEventListener('click', function() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+            const currentUser = localStorage.getItem('currentUser');
+
+            if (title === '' || content === '') {
+                alert('Judul dan isi catatan tidak boleh kosong!');
+                return;
+            }
+
+            // Buat objek catatan baru dengan nama pengguna
+            const note = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toLocaleString('id-ID'),
+                user: currentUser
+            };
+
+            // Simpan catatan ke localStorage
+            saveNote(note);
+
+            // Kosongkan input
+            noteTitle.value = '';
+            noteContent.value = '';
+
+            // Tampilkan kembali semua catatan
+            loadNotes();
+        });
+
+        // Fungsi untuk mengecek status login
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                showNotesSection();
+            } else {
+                loginSection.style.display = 'block';
+                notesSection.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk menampilkan area catatan
+        function showNotesSection() {
+            const currentUser = localStorage.getItem('currentUser');
+            displayUsername.textContent = currentUser;
+            
+            loginSection.style.display = 'none';
+            notesSection.style.display = 'block';
+            loadNotes();
+        }
+
+        // Fungsi untuk menyimpan catatan
+        function saveNote(note) {
+            let notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.push(note);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        // Fungsi untuk memuat dan menampilkan catatan pengguna yang sedang login
+        function loadNotes() {
+            const currentUser = localStorage.getItem('currentUser');
+            let allNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            // Tampilkan hanya catatan milik pengguna yang sedang login
+            let userNotes = allNotes.filter(note => note.user === currentUser);
+            
+            notesList.innerHTML = '';
+
+            userNotes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.innerHTML = `
+                    <h3>${note.title}</h3>
+                    <span class="note-date">${note.date}</span>
+                    <p>${note.content}</p>
+                    <button class="delete-btn" data-id="${note.id}">Hapus</button>
+                `;
+                notesList.appendChild(noteCard);
+            });
+
+            // Tambah event listener untuk tombol hapus
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', deleteNote);
+            });
+        }
+
+        // Fungsi untuk menghapus catatan
+        function deleteNote(e) {
+            const noteId = parseInt(e.target.dataset.id);
+            let notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes = notes.filter(note => note.id !== noteId);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            loadNotes();
+        }
+    </script>
+</body>
+</html>
